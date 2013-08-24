@@ -277,7 +277,13 @@ function Templater:GetTemplate()
 end
 
 function Templater:GetTemplateByName(name)
-    return assert(self.db.profile.templates[name], "Template of given name not found.")
+    local tpl = self.db.profile.templates[name]
+
+    if not tpl then
+        error("Template of given name not found.", 0)
+    end
+
+    return tpl
 end
 
 function Templater:SetTemplate(tpl, acceptNil)
