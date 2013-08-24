@@ -1,0 +1,16 @@
+## Interface: 20400
+## Title: sGroupTemplater
+## Notes: Provides group template functionality. Usage: /sgt
+## Author: Siarkowy
+## X-License: 2-Clause BSD
+## Version: 1.0
+# ## RequiredDeps: Ace3
+## OptionalDeps: Ace3
+## SavedVariables: sGTDB
+
+# libs
+
+# core
+core.lua
+slash.lua
+share.lua
