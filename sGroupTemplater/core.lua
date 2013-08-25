@@ -493,6 +493,6 @@ function Templater:OnInitialize()
     self.options = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater", "sGroupTemplater")
     self.options.default = function() self.db:ResetProfile() end
 
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Share", self.share)
-    self.options_share = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater_Share", "Share", "sGroupTemplater")
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Share", self.slash.args.share)
+    self.share = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater_Share", "Share", "sGroupTemplater")
 end
