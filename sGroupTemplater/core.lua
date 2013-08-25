@@ -33,8 +33,22 @@ local ACTION_LOOT       = 5
 local ACTION_ASSISTANTS = 6
 local ACTION_LEADER     = 7
 
+local ACTION_LABELS = {
+    "disband",
+    "restore",
+    "invite",
+    "shuffle",
+    "loot",
+    "assistants",
+    "leader",
+    [0] = "none",
+}
+
+Templater.ACTION_LABELS = ACTION_LABELS
+
 local ACTION = ACTION_NONE
-local TPL -- current template
+local TPL               -- current template
+local invtimes = {}     -- invite times
 
 -- Template format -------------------------------------------------------------
 
@@ -109,34 +123,26 @@ do -- table management
 end
 
 function Templater:OnEnable()
-    self:Print("enable")
+    if ACTION == ACTION_NONE then
+        return self:Disable()
+    end
 
-    self:RegisterEvent("PARTY_MEMBERS_CHANGED")
     TPL = TPL or self.db.profile.templates[DEFAULT]
-
-    if self:IsInGroup() then
-        self:PARTY_MEMBERS_CHANGED()
-    end
-
-    if      ACTION == ACTION_RESTORE
-    or      ACTION == ACTION_INVITE     then self:Reinvite()
-    elseif  ACTION == ACTION_DISBAND    then self:Disband()
-    elseif  ACTION == ACTION_SHUFFLE    then self:Shuffle()
-    elseif  ACTION == ACTION_LOOT       then self:SetLoot()
-    elseif  ACTION == ACTION_ASSISTANTS then self:PromoteAssistants()
-    elseif  ACTION == ACTION_LEADER     then self:SetLeader()
-
-    else
-        self:Disable()
-    end
+    self:Print("Enabled", self:GetTemplateName(), "in", ACTION_LABELS[ACTION], "mode.")
+    self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+    self:PARTY_MEMBERS_CHANGED()
 end
 
 function Templater:OnDisable()
-    self:Print("disable")
+    self.wipe(invtimes)
+
+    if ACTION ~= ACTION_NONE then
+        self:Print("Disabled", self:GetTemplateName(), "in", ACTION_LABELS[ACTION], "mode.")
+    end
 
     if TPL and TPL.__nextTpl then
         ACTION = TPL.__nextAction or ACTION_NONE
-        TPL = assert(self.db.profile.templates[TPL.__nextTpl], "Non-existent template set in __nextTpl.")
+        TPL = assert(self.db.profile.templates[TPL.__nextTpl], "Non-existent template name in __nextTpl.")
     else
         ACTION = ACTION_NONE
         TPL = nil -- clear current template reference
@@ -148,20 +154,17 @@ function Templater:PARTY_MEMBERS_CHANGED()
         return self:Disband(true)
     end
 
-    if not TPL or not self:IsInGroup() then
+    if not TPL then
         return self:Disable()
     end
 
-    local raid = UnitInRaid("player")
-
-    -- convert to raid if needed
-    if not raid and TPL.__raid then
-        return ConvertToRaid()
-    elseif raid then
+    if UnitInRaid("player") then
         self:UpdateNumSubgroupMembers()
+    elseif TPL.__raid and GetNumPartyMembers() > 0 then
+        return ConvertToRaid()
     end
 
-    if not (ACTION == ACTION_RESTORE or ACTION == ACTION_INVITE) or self:IsPartyComplete() then
+    if not (ACTION == ACTION_RESTORE or ACTION == ACTION_INVITE) or self:Reinvite() then
         if not (ACTION == ACTION_RESTORE or ACTION == ACTION_SHUFFLE) or self:Shuffle() then
             if not (ACTION == ACTION_RESTORE or ACTION == ACTION_LOOT) or self:SetLoot() then
                 if not (ACTION == ACTION_RESTORE or ACTION == ACTION_ASSISTANTS) or self:PromoteAssistants() then
@@ -278,13 +281,7 @@ function Templater:GetTemplate()
 end
 
 function Templater:GetTemplateByName(name)
-    local tpl = self.db.profile.templates[name]
-
-    if not tpl then
-        error("Template of given name not found.", 0)
-    end
-
-    return tpl
+    return self.db.profile.templates[name]
 end
 
 function Templater:SetTemplate(tpl, acceptNil)
@@ -479,7 +476,7 @@ function Templater:OnInitialize()
     local defaults = {
         profile = {
             templates = {
-                [DEFAULT] = { __name = "Default" }
+                [DEFAULT] = { }
             }
         }
     }
