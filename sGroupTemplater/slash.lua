@@ -231,12 +231,6 @@ function Templater:OnSlashCmd(input)
     end
 end
 
-function Templater:ShowOptionsFrame()
-    InterfaceOptionsFrame_OpenToFrame(self.options)
-end
-
-local tpls = {}
-
 function Templater:GetTemplateName()
     local TPL = self:GetTemplate()
 
@@ -253,26 +247,29 @@ function Templater:GetTemplateName()
     return nil
 end
 
-function Templater:GetTemplateNames()
-    for k in pairs(tpls) do
-        tpls[k] = nil
-    end
+local tpls = {}
 
-    for tpl in pairs(self.db.profile.templates) do
-        tpls[tpl] = tpl
+function Templater:GetTemplateNames()
+    self.wipe(tpls)
+
+    for name, tpl in pairs(self.db.profile.templates) do
+        tpls[name] = format("%s%s", tpl.__name or name, tpl.__time and date(" |cff888888   @ %c|r", tpl.__time) or "")
     end
 
     return tpls
 end
 
-function Templater:SetTemplateByName(info, v)
-    assert(v, "SetTemplateByName: You have to specify the template name.")
+function Templater:SetTemplateByName(info, name)
+    assert(name, "SetTemplateByName: You have to specify the template name.")
 
-    local tpl = self.db.profile.templates[v]
-
-    if tpl then
-        return self:SetTemplate(tpl)
+    local tpl = self:GetTemplateByName(name)
+    if not tpl then
+        return self:Print(("Template %s does not exist."):format(name))
     end
 
-    self:Print(("Template %s does not exist."):format(v))
+    self:SetTemplate(tpl)
+end
+
+function Templater:ShowOptionsFrame()
+    InterfaceOptionsFrame_OpenToFrame(self.options)
 end
