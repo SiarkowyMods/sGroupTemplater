@@ -4,11 +4,18 @@
 ## Author: Siarkowy
 ## X-License: 2-Clause BSD
 ## Version: 1.0
-# ## RequiredDeps: Ace3
 ## OptionalDeps: Ace3
 ## SavedVariables: sGTDB
 
 # libs
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
 
 # core
 core.lua
