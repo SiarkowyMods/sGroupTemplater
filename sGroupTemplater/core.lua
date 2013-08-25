@@ -20,6 +20,7 @@ local pairs = pairs
 local tinsert = tinsert
 local tremove = tremove
 
+local INVITE_TIMEOUT    = 30
 local MAX_RAID_SUBGROUP = 8
 
 -- Template management actions
@@ -360,15 +361,18 @@ function Templater:Reinvite(tpl)
 
     for name in pairs(tpl) do
         if IsName(name) and not self:UnitInGroup(name) then
-            InviteUnit(name)
+            if time() - (invtimes[name] or 0) >= INVITE_TIMEOUT then
+                invtimes[name] = time()
+                InviteUnit(name)
+            end
 
             if not self:IsInGroup() then
-                return
+                return false
             end
         end
     end
 
-    self:PARTY_MEMBERS_CHANGED()
+    return self:IsPartyComplete(tpl)
 end
 
 function Templater:IsPartyComplete(tpl)
