@@ -108,6 +108,11 @@ Templater.slash = {
             type = "execute",
             disabled = function() return not Templater:IsInGroup() end,
             func = function(info)
+                if IsInInstance() and not info.input:match("force") then
+                    StaticPopup_Show("SGT_GROUP_DISBAND")
+                    return
+                end
+
                 Templater:Disable()
                 Templater:SetAction(ACTION_DISBAND)
                 Templater:Enable()

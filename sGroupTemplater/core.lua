@@ -151,7 +151,7 @@ end
 
 function Templater:PARTY_MEMBERS_CHANGED()
     if ACTION == ACTION_DISBAND and self:IsInGroup() then
-        return self:Disband(true)
+        return self:Disband()
     end
 
     if not TPL then
@@ -339,15 +339,10 @@ local function IsName(str)
     return strsub(str, 1, 2) ~= "__"
 end
 
-function Templater:Disband(force)
+function Templater:Disband()
     if not self:IsInGroup() then
         self:Disable()
         -- error("You have to be in a group.", 0)
-    end
-
-    if IsInInstance() and not force then
-        StaticPopup_Show("SGT_GROUP_DISBAND")
-        return
     end
 
     UninviteUnit(UnitInRaid("player") and "raid1" or "party1")
@@ -456,7 +451,7 @@ end
 
 -- Init ------------------------------------------------------------------------
 
-StaticPopupDialogs.AGU_GROUP_DISBAND = {
+StaticPopupDialogs.SGT_GROUP_DISBAND = {
     text = "Are you sure you want to disband group? Bear in mind that if you don't have an ID on the current instance, instance boot timer will start for all players.",
     button1 = ACCEPT,
     button2 = CANCEL,
