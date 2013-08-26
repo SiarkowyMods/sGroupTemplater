@@ -178,10 +178,10 @@ function Templater:PARTY_MEMBERS_CHANGED()
 end
 
 do
-    local counts
+    local counts = {}
 
     function Templater:UpdateNumSubgroupMembers()
-        counts = self.wipe(counts or self.table())
+        self.wipe(counts)
 
         local name, rank, group
 
@@ -382,7 +382,7 @@ end
 function Templater:Shuffle(tpl)
     tpl = assert(tpl or TPL, "Shuffle: Template missing.")
 
-    local name, current, correct, _correct, _
+    local correct, current, name, _correct, _current, _name, _
 
     if UnitInRaid("player") then
         for i = 1, GetNumRaidMembers() do
@@ -394,11 +394,11 @@ function Templater:Shuffle(tpl)
                     return SetRaidSubgroup(i, correct)
                 else
                     for j = 1, GetNumRaidMembers() do
-                        name, _, current = GetRaidRosterInfo(j)
-                        _correct = abs(tpl[name] or 0)
+                        _name, _, _current = GetRaidRosterInfo(j)
+                        _correct = abs(tpl[_name] or 0)
 
-                        if current == correct and current ~= _correct then
-                            return SetRaidSubgroup(j, self:GetNumSubgroupMembers(_correct) < 5
+                        if _current == correct and _current ~= _correct then
+                            return SetRaidSubgroup(j, _correct > 0 and self:GetNumSubgroupMembers(_correct) < 5
                                 and _correct or self:GetLastIncompleteSubgroup())
                         end
                     end
