@@ -456,7 +456,7 @@ end
 
 -- Init ------------------------------------------------------------------------
 
-StaticPopupDialogs.AGU_GROUP_DISBAND = {
+StaticPopupDialogs.SGT_GROUP_DISBAND = {
     text = "Are you sure you want to disband group? Bear in mind that if you don't have an ID on the current instance, instance boot timer will start for all players.",
     button1 = ACCEPT,
     button2 = CANCEL,
