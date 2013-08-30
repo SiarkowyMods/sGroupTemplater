@@ -3,7 +3,7 @@
 ## Notes: Provides group template functionality. Usage: /sgt
 ## Author: Siarkowy
 ## X-License: 2-Clause BSD
-## Version: 1.0
+## Version: 1.1
 ## OptionalDeps: Ace3
 ## SavedVariables: sGTDB
 
