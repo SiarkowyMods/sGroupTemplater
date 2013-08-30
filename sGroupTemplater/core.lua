@@ -391,7 +391,7 @@ function Templater:SetRaidSubgroup(i, group)
         return self:SendCommMessage("sGT", format("%s->%d", GetRaidRosterInfo(i), group), "WHISPER", shuffler)
     end
 
-    return error("Cannot swap players between group while in combat.")
+    return error("Cannot swap players between groups while in combat.")
 end
 
 function Templater:Shuffle(tpl)

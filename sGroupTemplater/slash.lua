@@ -225,6 +225,31 @@ Templater.slash = {
             guiHidden = true,
             order = 60
         },
+        move = {
+            name = "Move",
+            desc = "Moves players between groups.",
+            type = "execute",
+            func = function(info)
+                local name, group = info.input:match("%s(%w+).*(%d+)")
+                group = tonumber(group) or 0
+
+                if not name then
+                    return Templater:Print("Usage: /sgt move <player> <group>")
+                end
+
+                if not UnitInRaid(name) then
+                    return Templater:Print("Character has to be in your raid group.")
+                end
+
+                if group <= 0 or group > 8 then -- negative group not possible
+                    return Templater:Print("Wrong group number.")
+                end
+
+                Templater:SetRaidSubgroup(UnitInRaid(name) + 1, group)
+            end,
+            guiHidden = true,
+            order = 65
+        },
     }
 }
 
