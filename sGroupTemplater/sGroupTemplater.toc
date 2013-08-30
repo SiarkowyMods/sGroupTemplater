@@ -22,3 +22,4 @@ Libs\AceComm-3.0\AceComm-3.0.xml
 core.lua
 slash.lua
 share.lua
+remote.lua

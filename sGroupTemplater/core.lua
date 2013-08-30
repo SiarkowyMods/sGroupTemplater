@@ -8,6 +8,7 @@ sGroupTemplater = LibStub("AceAddon-3.0"):NewAddon(
 
     -- embeds:
     "AceEvent-3.0",
+    "AceComm-3.0",
     "AceConsole-3.0"
 )
 
@@ -379,6 +380,20 @@ function Templater:IsPartyComplete(tpl)
     return true
 end
 
+function Templater:SetRaidSubgroup(i, group)
+    if not InCombatLockdown() then
+        return SetRaidSubgroup(i, group)
+    end
+
+    local shuffler = self:GetRemoteShuffler()
+
+    if shuffler and UnitInRaid(shuffler) then
+        return self:SendCommMessage("sGT", format("%s->%d", GetRaidRosterInfo(i), group), "WHISPER", shuffler)
+    end
+
+    return error("Cannot swap players between group while in combat.")
+end
+
 function Templater:Shuffle(tpl)
     tpl = assert(tpl or TPL, "Shuffle: Template missing.")
 
@@ -391,14 +406,14 @@ function Templater:Shuffle(tpl)
 
             if current ~= correct and correct > 0 then -- player in wrong group
                 if self:GetNumSubgroupMembers(correct) < 5 then
-                    return SetRaidSubgroup(i, correct)
+                    return self:SetRaidSubgroup(i, correct)
                 else
                     for j = 1, GetNumRaidMembers() do
                         _name, _, _current = GetRaidRosterInfo(j)
                         _correct = abs(tpl[_name] or 0)
 
                         if _current == correct and _current ~= _correct then
-                            return SetRaidSubgroup(j, _correct > 0 and self:GetNumSubgroupMembers(_correct) < 5
+                            return self:SetRaidSubgroup(j, _correct > 0 and self:GetNumSubgroupMembers(_correct) < 5
                                 and _correct or self:GetLastIncompleteSubgroup())
                         end
                     end
@@ -470,11 +485,15 @@ StaticPopupDialogs.SGT_GROUP_DISBAND = {
 function Templater:OnInitialize()
     local defaults = {
         profile = {
+            remotes = {},
+            shuffler = nil,
             templates = {
                 [DEFAULT] = { }
             }
         }
     }
+
+    LibStub("AceComm-3.0"):RegisterComm("sGT", function(...) self:OnCommReceived(...) end)
 
     self.author = GetAddOnMetadata("sGroupTemplater", "Author")
     self.version = GetAddOnMetadata("sGroupTemplater", "Version")
@@ -485,9 +504,15 @@ function Templater:OnInitialize()
     self:RegisterChatCommand("gtemplate", "OnSlashCmd")
     self:RegisterChatCommand("sgrouptemplater", "OnSlashCmd")
 
+    -- General options
     self.options = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater", "sGroupTemplater")
     self.options.default = function() self.db:ResetProfile() end
 
+    -- Remote shuffling options
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Remote", self.slash.args.remote)
+    self.remote = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater_Remote", "Remote shuffling", "sGroupTemplater")
+
+    -- Share options
     LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Share", self.slash.args.share)
     self.share = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater_Share", "Share", "sGroupTemplater")
 end
