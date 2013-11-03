@@ -198,10 +198,12 @@ do
 
     function Templater:GetLastIncompleteSubgroup()
         for group = MAX_RAID_SUBGROUP, 1, -1 do
-            if not counts[group] then
+            if (counts[group] or 0) < 5 then
                 return group
             end
         end
+
+        error("No space for shuffling.", 0)
     end
 end
 
