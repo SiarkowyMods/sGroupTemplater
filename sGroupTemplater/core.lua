@@ -12,6 +12,20 @@ sGroupTemplater = LibStub("AceAddon-3.0"):NewAddon(
     "AceConsole-3.0"
 )
 
+-- Binding stuff
+sGT_NAME = "sGroupTemplater"
+BINDING_HEADER_SGT = "sGroupTemplater"
+BINDING_NAME_SGT_SAVE_TPL1 = "Save Template 1"
+BINDING_NAME_SGT_SAVE_TPL2 = "Save Template 2"
+BINDING_NAME_SGT_SAVE_TPL3 = "Save Template 3"
+BINDING_NAME_SGT_RESTORE_TPL1 = "Restore Template 1"
+BINDING_NAME_SGT_RESTORE_TPL2 = "Restore Template 2"
+BINDING_NAME_SGT_RESTORE_TPL3 = "Restore Template 3"
+BINDING_NAME_SGT_SHUFFLE_TPL1 = "Shuffle Template 1"
+BINDING_NAME_SGT_SHUFFLE_TPL2 = "Shuffle Template 2"
+BINDING_NAME_SGT_SHUFFLE_TPL3 = "Shuffle Template 3"
+BINDING_NAME_SGT_DISBAND = "Disband group"
+
 local Templater = sGroupTemplater
 local GetNumPartyMembers = GetNumPartyMembers
 local UnitInParty = UnitInParty

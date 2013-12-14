@@ -1,0 +1,51 @@
+<Bindings>
+    <Binding name="SGT_SAVE_TPL1" header="SGT">
+        sGroupTemplater:SaveGroupTemplate("1")
+    </Binding>
+    <Binding name="SGT_SAVE_TPL2">
+        sGroupTemplater:SaveGroupTemplate("2")
+    </Binding>
+    <Binding name="SGT_SAVE_TPL3">
+        sGroupTemplater:SaveGroupTemplate("3")
+    </Binding>
+    <Binding name="SGT_RESTORE_TPL1">
+        sGroupTemplater:SetTemplateByName(nil, "1")
+        sGroupTemplater:SetAction(2) --= ACTION_RESTORE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_RESTORE_TPL2">
+        sGroupTemplater:SetTemplateByName(nil, "2")
+        sGroupTemplater:SetAction(2) --= ACTION_RESTORE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_RESTORE_TPL3">
+        sGroupTemplater:SetTemplateByName(nil, "3")
+        sGroupTemplater:SetAction(2) --= ACTION_RESTORE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_SHUFFLE_TPL1">
+        sGroupTemplater:SetTemplateByName(nil, "1")
+        sGroupTemplater:SetAction(4) --= ACTION_SHUFFLE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_SHUFFLE_TPL2">
+        sGroupTemplater:SetTemplateByName(nil, "2")
+        sGroupTemplater:SetAction(4) --= ACTION_SHUFFLE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_SHUFFLE_TPL3">
+        sGroupTemplater:SetTemplateByName(nil, "3")
+        sGroupTemplater:SetAction(4) --= ACTION_SHUFFLE
+        sGroupTemplater:Enable()
+    </Binding>
+    <Binding name="SGT_DISBAND">
+        if IsInInstance() then
+            StaticPopup_Show("SGT_GROUP_DISBAND")
+            return
+        end
+
+        sGroupTemplater:Disable()
+        sGroupTemplater:SetAction(1) --= ACTION_DISBAND
+        sGroupTemplater:Enable()
+    </Binding>
+</Bindings>
