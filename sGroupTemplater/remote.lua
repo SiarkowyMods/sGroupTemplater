@@ -4,9 +4,17 @@
 --------------------------------------------------------------------------------
 
 local Templater = sGroupTemplater
+local GetRaidRosterInfo = GetRaidRosterInfo
+local SetRaidSubgroup = SetRaidSubgroup
+local UnitInRaid = UnitInRaid
+local assert = assert
+local tonumber = tonumber
 
 function Templater:OnCommReceived(prefix, msg, channel, sender)
-    if channel == "WHISPER" and UnitInRaid(sender) and self.db.profile.remotes[sender] then
+    if channel == "WHISPER" and UnitInRaid(sender) and (
+        select(2, GetRaidRosterInfo(UnitInRaid(sender) + 1)) == 2
+        or self.db.profile.remotes[sender]
+    ) then
         local name, group = msg:match("(%w+)%->(%d)")
         group = tonumber(group) or 0
 
