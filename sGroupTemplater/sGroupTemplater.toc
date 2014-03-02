@@ -1,11 +1,12 @@
 ## Interface: 20400
 ## Title: sGroupTemplater
 ## Notes: Provides group template functionality. Usage: /sgt
-## Author: Siarkowy
+## Author: Siarkowy <siarkowy@siarkowy.net>
+## X-Website: https://github.com/SiarkowyMods/sGroupTemplater
 ## X-License: 2-Clause BSD
+## SavedVariables: sGTDB
 ## Version: 1.4
 ## OptionalDeps: Ace3
-## SavedVariables: sGTDB
 
 # libs
 Libs\LibStub\LibStub.lua
