@@ -5,7 +5,7 @@
 ## X-Website: https://github.com/SiarkowyMods/sGroupTemplater
 ## X-License: 2-Clause BSD
 ## SavedVariables: sGTDB
-## Version: 1.4
+## Version: 1.5
 ## OptionalDeps: Ace3
 
 # libs
@@ -23,4 +23,3 @@ Libs\AceComm-3.0\AceComm-3.0.xml
 core.lua
 slash.lua
 share.lua
-remote.lua

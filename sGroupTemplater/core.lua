@@ -142,10 +142,22 @@ function Templater:OnEnable()
         return self:Disable()
     end
 
+    if ACTION == ACTION_RESTORE and InCombatLockdown() and not UnitInRaid("player") then
+        self:Print(ERR_NOT_IN_COMBAT)
+        return self:Disable()
+    end
+
     TPL = TPL or self.db.profile.templates[DEFAULT]
+    self.shuffler = nil
+
+    if InCombatLockdown() and (ACTION == ACTION_RESTORE or ACTION == ACTION_SHUFFLE) then
+        self:SendCommMessage("sGT", "SHUFFLIN", "RAID")
+    else
+        self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+        self:PARTY_MEMBERS_CHANGED()
+    end
+
     self:Print("Enabled", self:GetTemplateName(), "in", ACTION_LABELS[ACTION], "mode.")
-    self:RegisterEvent("PARTY_MEMBERS_CHANGED")
-    self:PARTY_MEMBERS_CHANGED()
 end
 
 function Templater:OnDisable()
@@ -161,6 +173,38 @@ function Templater:OnDisable()
     else
         ACTION = ACTION_NONE
         TPL = nil -- clear current template reference
+    end
+
+    self.shuffler = nil
+end
+
+function Templater:OnCommReceived(prefix, msg, channel, sender)
+    if not UnitInRaid(sender) or select(2, GetRaidRosterInfo(UnitInRaid(sender) + 1)) == 0 then
+        return
+    end
+
+    if channel == "RAID" then
+        if msg == "SHUFFLIN" and not InCombatLockdown() then
+            self:SendCommMessage("sGT", "SHUFFLIN", "WHISPER", sender)
+        end
+
+    elseif channel == "WHISPER" then
+        if msg == "SHUFFLIN" then
+            if not self.shuffler then
+                self.shuffler = sender
+                self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+                self:PARTY_MEMBERS_CHANGED()
+            end
+
+            return
+        end
+
+        local name, group = msg:match("(%w+)%->(%d)")
+        group = tonumber(group) or 0
+
+        if name and group > 0 and group <= 8 and UnitInRaid(name) then
+            SetRaidSubgroup(UnitInRaid(name) + 1, group)
+        end
     end
 end
 
@@ -401,10 +445,8 @@ function Templater:SetRaidSubgroup(i, group)
         return SetRaidSubgroup(i, group)
     end
 
-    local shuffler = self:GetRemoteShuffler()
-
-    if shuffler and UnitInRaid(shuffler) then
-        return self:SendCommMessage("sGT", format("%s->%d", GetRaidRosterInfo(i), group), "WHISPER", shuffler)
+    if self.shuffler and UnitInRaid(self.shuffler) then
+        return self:SendCommMessage("sGT", format("%s->%d", GetRaidRosterInfo(i), group), "WHISPER", self.shuffler)
     end
 
     return error("Cannot swap players between groups while in combat.")
@@ -501,8 +543,6 @@ StaticPopupDialogs.SGT_GROUP_DISBAND = {
 function Templater:OnInitialize()
     local defaults = {
         profile = {
-            remotes = {},
-            shuffler = nil,
             templates = {
                 [DEFAULT] = { }
             }
@@ -523,10 +563,6 @@ function Templater:OnInitialize()
     -- General options
     self.options = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater", "sGroupTemplater")
     self.options.default = function() self.db:ResetProfile() end
-
-    -- Remote shuffling options
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Remote", self.slash.args.remote)
-    self.remote = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("sGroupTemplater_Remote", "Remote shuffling", "sGroupTemplater")
 
     -- Share options
     LibStub("AceConfig-3.0"):RegisterOptionsTable("sGroupTemplater_Share", self.slash.args.share)
